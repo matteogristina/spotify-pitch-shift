@@ -1,7 +1,7 @@
 <div alt style="text-align: center; transform: scale(.25);">
 	<picture>
-		<source media="(prefers-color-scheme: dark)" srcset="https://github.com/matteogristina/spotify-pitch-shift/tree/master/assets/banner_dark.png" />
-		<img alt="banner" src="https://github.com/matteogristina/spotify-pitch-shift/tree/master/assets/banner_light.png" />
+		<source media="(prefers-color-scheme: dark)" srcset="assets/banner_dark.png" />
+		<img alt="banner" src="assets/banner_light.png" />
 	</picture>
 </div>
 
