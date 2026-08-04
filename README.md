@@ -4,6 +4,14 @@
 
 This extension provides an easy way to manipulate playback rate and pitch settings for Spotify Web.
 
+## Acknowledgments & Credits
+
+This project is a standalone fork/customization of [the original spotify playback speed extension](https://github.com/rnikko/spotify-playback-speed) created by [@rnikko](https://github.com/rnikko). 
+
+* **Key Changes:** Pivoted from percentage-based playback speed control into a semitone-based control. It is not intended as a pull request to the original project.
+
+Huge thanks to the original authors for building the foundation!
+
 ### Requirements
 
 -   Chrome / Any web browser that supports [bookmarklets](https://en.wikipedia.org/wiki/Bookmarklet)

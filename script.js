@@ -1,4 +1,4 @@
-// Spotify Playback Speed 1.13 || 2025 Github-@rnikko
+// Spotify Playback Speed 2.0 || 2025 Github-@rnikko edits by matteogristina
 (() => {
   const base = document.createElement;
   let spotifyPlaybackEls = [];
@@ -30,6 +30,10 @@
   let icon;
   let iconSpan;
 
+  const semitoneToPlaybackRate = (semitones) => 2 ** (semitones / 12);
+  const playbackRateToSemitone = (rate) => Math.round(12 * Math.log2(rate));
+  const formatSemitone = (value) => `${value > 0 ? '+' : ''}${value}st`;
+
   const playbackRateDescriptor = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'playbackRate');
   Object.defineProperty(HTMLMediaElement.prototype, 'playbackRate', {
     set(value) {
@@ -40,7 +44,7 @@
 
       if (value.source !== 'sps') {
         console.info('sps⚠️ prevented unintended playback speed change');
-        playbackRateDescriptor.set.call(this, Number(sliderInput.value));
+        playbackRateDescriptor.set.call(this, semitoneToPlaybackRate(Number(sliderInput.value)));
       } else {
         playbackRateDescriptor.set.call(this, value.value);
       }
@@ -61,7 +65,7 @@
     const max = maxInput.value;
     const pp = ppCheckbox.checked;
 
-    iconSpan.innerHTML = `${val.toFixed(2)}x`;
+    iconSpan.innerHTML = formatSemitone(val);
     sliderInput.style.backgroundSize = `${((val - min) * 100) / (max - min)}% 100%`;
 
     if (pp) {
@@ -76,13 +80,13 @@
       ppOnPath.style.display = 'none';
     }
 
-    localStorage.setItem('sps-speed', val);
+    localStorage.setItem('sps-semitones', val);
     localStorage.setItem('sps-pp', pp);
-    localStorage.setItem('sps-speed-min', min);
-    localStorage.setItem('sps-speed-max', max);
+    localStorage.setItem('sps-semitones-min', min);
+    localStorage.setItem('sps-semitones-max', max);
 
     spotifyPlaybackEls.forEach((el) => {
-      el.playbackRate = { source: 'sps', value: val };
+      el.playbackRate = { source: 'sps', value: semitoneToPlaybackRate(val) };
       el.preservesPitch = pp;
     });
   };
@@ -114,17 +118,21 @@
   };
 
   const resetMinMax = () => {
-    minInput.value = 0.5;
-    maxInput.value = 2;
+    minInput.value = -12;
+    maxInput.value = 12;
   };
 
   const saveMinMax = () => {
-    sliderInput.min = minInput.value !== '0' && minInput.value ? minInput.value : '0.5';
-    sliderInput.max = maxInput.value !== '0' && maxInput.value ? maxInput.value : '2';
-    localStorage.setItem('sps-speed-min', minInput.value);
-    localStorage.setItem('sps-speed-max', maxInput.value);
-    sliderMin.innerHTML = `${Number(minInput.value) * 1}x`;
-    sliderMax.innerHTML = `${Number(maxInput.value) * 1}x`;
+    const min = minInput.value ? Math.round(Number(minInput.value)) : -12;
+    const max = maxInput.value ? Math.round(Number(maxInput.value)) : 12;
+    sliderInput.min = min;
+    sliderInput.max = max;
+    minInput.value = min;
+    maxInput.value = max;
+    localStorage.setItem('sps-semitones-min', min);
+    localStorage.setItem('sps-semitones-max', max);
+    sliderMin.innerHTML = formatSemitone(min);
+    sliderMax.innerHTML = formatSemitone(max);
     setValues();
     toggleShowSettings();
   };
@@ -132,9 +140,21 @@
   const cleanStorage = () => {
     const oldSpeed = localStorage.getItem('pb-settings-speed');
     const oldPp = localStorage.getItem('pb-settings-prepitch');
+    const speed = oldSpeed ? Number(oldSpeed) / 100 : Number(localStorage.getItem('sps-speed'));
+
+    if (!localStorage.getItem('sps-semitones') && speed) {
+      localStorage.setItem('sps-semitones', playbackRateToSemitone(speed));
+    }
+
+    if (!localStorage.getItem('sps-semitones-min') && localStorage.getItem('sps-speed-min')) {
+      localStorage.setItem('sps-semitones-min', playbackRateToSemitone(Number(localStorage.getItem('sps-speed-min'))));
+    }
+
+    if (!localStorage.getItem('sps-semitones-max') && localStorage.getItem('sps-speed-max')) {
+      localStorage.setItem('sps-semitones-max', playbackRateToSemitone(Number(localStorage.getItem('sps-speed-max'))));
+    }
 
     if (oldSpeed) {
-      localStorage.setItem('sps-speed', Number(oldSpeed) / 100);
       localStorage.removeItem('pb-settings-speed');
     }
 
@@ -160,12 +180,12 @@
     spsControls = document.createElement('div');
     spsControls.id = 'sps-controls';
     spsControls.style.display = 'block';
-    spsControls.innerHTML = '<div class="sps-common"><span class="sps-header">Playback Speed</span><div style="flex-grow: 1;"></div><button id="sps-settings-btn" class="sps-text-button">SETTINGS</button></div><div class="sps-common"><span id="sps-speed-min" style="line-height: 32px;">0.5x</span><input id="sps-input-slider" name="sps-slider" type="range" min="0.5" max="2" step="0.01" style="margin: 0px 0.75rem; background-size: 33.3333% 100%;"><span id="sps-speed-max" style="line-height: 32px;">2x</span></div><div class="sps-common"><button id="sps-pp" class="sps-icon-active" style="font-size: 16px; background-color: transparent; display: flex; flex-wrap: nowrap; align-items: center; user-select: none;"><input name="sps-pp" type="checkbox" style="display: none"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1.27rem" height="1.125rem" preserveAspectRatio="xMidYMid meet" viewBox="0 0 576 512"><path class="pp-off" fill="currentColor" d="M384 64H192C85.961 64 0 149.961 0 256s85.961 192 192 192h192c106.039 0 192-85.961 192-192S490.039 64 384 64zM64 256c0-70.741 57.249-128 128-128c70.741 0 128 57.249 128 128c0 70.741-57.249 128-128 128c-70.741 0-128-57.249-128-128zm320 128h-48.905c65.217-72.858 65.236-183.12 0-256H384c70.741 0 128 57.249 128 128c0 70.74-57.249 128-128 128z" style="display: none" /><path class="pp-on" fill="currentColor" d="M384 64H192C86 64 0 150 0 256s86 192 192 192h192c106 0 192-86 192-192S490 64 384 64zm0 320c-70.8 0-128-57.3-128-128c0-70.8 57.3-128 128-128c70.8 0 128 57.3 128 128c0 70.8-57.3 128-128 128z" style="display: none" /></svg><span style="margin-left: 0.5rem; line-height: 1;">Preserve Pitch</span></button><div style="flex-grow: 1;"></div><button id="sps-reset-btn" class="sps-text-button">1x</button></div>';
-
+    spsControls.innerHTML = '<div class="sps-common"><span class="sps-header">Semitone Shift</span><div style="flex-grow: 1;"></div><button id="sps-settings-btn" class="sps-text-button">SETTINGS</button></div><div class="sps-common"><span id="sps-speed-min" style="line-height: 32px;">-12st</span><input id="sps-input-slider" name="sps-slider" type="range" min="-12" max="12" step="1" style="margin: 0px 0.75rem; background-size: 50% 100%;"><span id="sps-speed-max" style="line-height: 32px;">+12st</span></div><div class="sps-common"><button id="sps-pp" class="sps-icon-active" style="font-size: 16px; background-color: transparent; display: flex; flex-wrap: nowrap; align-items: center; user-select: none;"><input name="sps-pp" type="checkbox" style="display: none"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1.27rem" height="1.125rem" preserveAspectRatio="xMidYMid meet" viewBox="0 0 576 512"><path class="pp-off" fill="currentColor" d="M384 64H192C85.961 64 0 149.961 0 256s85.961 192 192 192h192c106.039 0 192-85.961 192-192S490.039 64 384 64zM64 256c0-70.741 57.249-128 128-128c70.741 0 128 57.249 128 128c0 70.741-57.249 128-128 128c-70.741 0-128-57.249-128-128zm320 128h-48.905c65.217-72.858 65.236-183.12 0-256H384c70.741 0 128 57.249 128 128c0 70.74-57.249 128-128 128z" style="display: none" /><path class="pp-on" fill="currentColor" d="M384 64H192C86 64 0 150 0 256s86 192 192 192h192c106 0 192-86 192-192S490 64 384 64zm0 320c-70.8 0-128-57.3-128-128c0-70.8 57.3-128 128-128c70.8 0 128 57.3 128 128c0 70.8-57.3 128-128 128z" style="display: none" /></svg><span style="margin-left: 0.5rem; line-height: 1;">Preserve Pitch</span></button><div style="flex-grow: 1;"></div><button id="sps-reset-btn" class="sps-text-button">0st</button></div>';
+    
     spsSettings = document.createElement('div');
     spsSettings.id = 'sps-settings';
     spsSettings.style.display = 'none';
-    spsSettings.innerHTML = '<div class="sps-common"><span class="sps-header">Settings</span><div style="flex-grow: 1;"></div><button id="sps-settings-close-btn" class="sps-text-button">CLOSE</button></div><div style="display: flex; flex-wrap: wrap; width: 98px;"><label class="sps-common" style="width: 100%">Min:<div style="flex-grow: 1;"></div><input type="number" name="sps-min" min="0.07" max="15.999" step="0.1"></label><label class="sps-common" style="width: 100%">Max:<div style="flex-grow: 1;"></div><input type="number" name="sps-max" min="1" max="16" step="0.1"></label></div><div class="sps-common"><div style="flex-grow: 1;"></div><button id="sps-minmax-reset" class="sps-text-button">RESET</button><button id="sps-minmax-save" class="sps-text-button" style="margin-left: 0.5rem;">SAVE</button></div>';
+    spsSettings.innerHTML = '<div class="sps-common"><span class="sps-header">Settings</span><div style="flex-grow: 1;"></div><button id="sps-settings-close-btn" class="sps-text-button">CLOSE</button></div><div style="display: flex; flex-wrap: wrap; width: 98px;"><label class="sps-common" style="width: 100%">Min:<div style="flex-grow: 1;"></div><input type="number" name="sps-min" min="-48" max="47" step="1"></label><label class="sps-common" style="width: 100%">Max:<div style="flex-grow: 1;"></div><input type="number" name="sps-max" min="-47" max="48" step="1"></label></div><div class="sps-common"><div style="flex-grow: 1;"></div><button id="sps-minmax-reset" class="sps-text-button">RESET</button><button id="sps-minmax-save" class="sps-text-button" style="margin-left: 0.5rem;">SAVE</button></div>';
 
     spsMain = document.createElement('div');
     spsMain.id = 'sps-main';
@@ -177,7 +197,7 @@
     const spsIcon = document.createElement('div');
     spsIcon.id = 'sps-icon';
     spsIcon.setAttribute('class', 'sps-hover-white');
-    spsIcon.innerHTML = '<svg preserveAspectRatio="xMidYMid meet" width="2rem" height="2rem" viewBox="0 0 24 24" fill="currentColor" style="padding: 0.375rem;"><path d="M13 2.05v2c4.39.54 7.5 4.53 6.96 8.92c-.46 3.64-3.32 6.53-6.96 6.96v2c5.5-.55 9.5-5.43 8.95-10.93c-.45-4.75-4.22-8.5-8.95-8.97v.02M5.67 19.74A9.994 9.994 0 0 0 11 22v-2a8.002 8.002 0 0 1-3.9-1.63l-1.43 1.37m1.43-14c1.12-.9 2.47-1.48 3.9-1.68v-2c-1.95.19-3.81.94-5.33 2.2L7.1 5.74M5.69 7.1L4.26 5.67A9.885 9.885 0 0 0 2.05 11h2c.19-1.42.75-2.77 1.64-3.9M4.06 13h-2c.2 1.96.97 3.81 2.21 5.33l1.42-1.43A8.002 8.002 0 0 1 4.06 13M10 16.5l6-4.5l-6-4.5v9z" fill="currentColor"></path></svg><span id="sps-icon-text" style="margin-top: -0.125rem; font-size: 0.6875rem;">1.00x</span>';
+    spsIcon.innerHTML = '<svg preserveAspectRatio="xMidYMid meet" width="2rem" height="2rem" viewBox="0 -960 960 960" fill="currentColor" style="padding: 0.375rem;"><path d="M440-120v-240h80v80h320v80H520v80h-80Zm-320-80v-80h240v80H120Zm160-160v-80H120v-80h160v-80h80v240h-80Zm160-80v-80h400v80H440Zm160-160v-240h80v80h160v80H680v80h-80Zm-480-80v-80h400v80H120Z" fill="currentColor"></path></svg><span id="sps-icon-text" style="margin-top: -0.125rem; font-size: 0.6875rem;">0st</span>';
 
     const appEl = document.createElement('div');
     appEl.id = 'sps';
@@ -225,70 +245,71 @@
     icon = document.querySelector('#sps-icon');
     iconSpan = document.querySelector('#sps-icon-text');
 
-    let lastSpeed = 1;
+    let lastSemitones = 0;
     let lastPp = true;
-    let lastMin = 0.5;
-    let lastMax = 2;
+    let lastMin = -12;
+    let lastMax = 12;
 
     // init from storage
-    if (localStorage.getItem('sps-speed')) {
-      lastSpeed = Number(localStorage.getItem('sps-speed') ?? lastSpeed);
-      lastPp = localStorage.getItem('sps-pp') ? JSON.parse(localStorage.getItem('sps-pp')) : lastPp;
+    lastPp = localStorage.getItem('sps-pp') ? JSON.parse(localStorage.getItem('sps-pp')) : lastPp;
 
-      const storedMin = Number(localStorage.getItem('sps-speed-min'));
-      lastMin = (storedMin && storedMin !== 0) ? storedMin : lastMin;
+    if (localStorage.getItem('sps-semitones')) {
+      lastSemitones = Math.round(Number(localStorage.getItem('sps-semitones') ?? lastSemitones));
 
-      const storedMax = Number(localStorage.getItem('sps-speed-max'));
-      lastMax = (storedMax && storedMax !== 0) ? storedMax : lastMax;
+      const storedMin = localStorage.getItem('sps-semitones-min');
+      lastMin = storedMin === null ? lastMin : Math.round(Number(storedMin));
+
+      const storedMax = localStorage.getItem('sps-semitones-max');
+      lastMax = storedMax === null ? lastMax : Math.round(Number(storedMax));
     }
 
     oldMin = lastMin;
     oldMax = lastMax;
     ppCheckbox.checked = lastPp;
-    sliderInput.value = lastSpeed;
+    sliderInput.value = lastSemitones;
     sliderInput.min = lastMin;
     sliderInput.max = lastMax;
     minInput.value = lastMin;
     maxInput.value = lastMax;
 
-    sliderMin.innerHTML = `${lastMin}x`;
-    sliderMax.innerHTML = `${lastMax}x`;
+    sliderMin.innerHTML = formatSemitone(lastMin);
+    sliderMax.innerHTML = formatSemitone(lastMax);
 
     // add event listeners
     sliderInput.oninput = setValues;
     ppCheckbox.oninput = setValues;
     minInput.onchange = (e) => {
-      let newVal = Number(e.target.value);
+      let newVal = Math.round(Number(e.target.value));
       if (newVal >= oldMax) {
-        newVal = oldMax - 0.01;
-        e.target.value = newVal;
+        newVal = oldMax - 1;
       }
+      e.target.value = newVal;
       oldMin = newVal;
     };
     maxInput.onchange = (e) => {
-      let newVal = Number(e.target.value);
-      if (newVal < oldMin) {
-        newVal = oldMin + 0.01;
-        e.target.value = newVal;
+      let newVal = Math.round(Number(e.target.value));
+      if (newVal <= oldMin) {
+        newVal = oldMin + 1;
       }
+      e.target.value = newVal;
       oldMax = newVal;
     };
     resetMinmaxBtn.onclick = resetMinMax;
     saveMinmaxBtn.onclick = saveMinMax;
     speedResetBtn.onclick = () => {
-      if (sliderInput.max < 1) {
-        sliderInput.max = 1;
-        maxInput.value = 1;
-        localStorage.setItem('sps-speed-max', maxInput.value);
-        sliderMax.innerHTML = `${Number(maxInput.value) * 1}x`;
+      if (sliderInput.max < 0) {
+        sliderInput.max = 0;
+        maxInput.value = 0;
+        localStorage.setItem('sps-semitones-max', maxInput.value);
+        sliderMax.innerHTML = formatSemitone(Number(maxInput.value));
       }
-      if (sliderInput.min > 1) {
-        sliderInput.min = 1;
-        minInput.value = 1;
-        localStorage.setItem('sps-speed-min', minInput.value);
-        sliderMin.innerHTML = `${Number(minInput.value) * 1}x`;
+      if (sliderInput.min > 0) {
+        sliderInput.min = 0;
+        minInput.value = 0;
+        localStorage.setItem('sps-semitones-min', minInput.value);
+        sliderMin.innerHTML = formatSemitone(Number(minInput.value));
       }
-      sliderInput.value = 1;
+      sliderInput.value = 0;
       setValues();
     };
     icon.onclick = toggleShowMain;
