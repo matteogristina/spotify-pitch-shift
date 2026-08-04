@@ -22,28 +22,12 @@ Browser extension for Spotify Web Player that adds a playback control beside Spo
 
 ## Quick start
 
+#### Extensions/Add-ons coming soon.
 
-You don't need the source code if you want to just use the extension
-
-#### Chrome ver.
-
-1. [Install from Chrome Web Store](https://chrome.google.com/webstore/detail/spotify-playback-speed/bgehnoihoklmofgehcefiaicdcdgppck)
-
-2. Download latest release
-    *  Download latest release from Releases
-    *  Enable Developer Mode on Chrome's 'Manage Extensions' page
-    *  Unarchive and drag folder onto 'Manage Extensions' page
-
-#### Bookmarklet ver.
-
-1. Create bookmarklet
-2. Load Spotify and click bookmarklet while Spotify web player is loading
-3. Retry and click bookmarklet earlier if not present or not working
 
 ## Contributing
 
-We are not accepting contributions at this time. If you've found a bug or have a feature request, please [create an issue](https://github.com/tldraw/tldraw/issues/new/choose) and we can discuss it there. See our [contributing guide](https://github.com/tldraw/tldraw/blob/main/CONTRIBUTING.md) for details.
-
+If you've found a bug or have a feature request, please [create an issue](https://github.com/matteogristina/spotify-pitch-shift/issues/new) and we can discuss it there.
 ## Acknowledgments & Credits
 
 This project is a standalone fork/customization of [the original spotify playback speed extension](https://github.com/rnikko/spotify-playback-speed) created by [@rnikko](https://github.com/rnikko). 

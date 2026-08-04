@@ -1,4 +1,4 @@
-// Spotify Playback Speed 2.0 || 2025 Github-@rnikko edits by matteogristina
+// Spotify Pitch Shift 1.0 || matteogristina, foundation by 2025 Github-@rnikko
 (() => {
   const base = document.createElement;
   let spotifyPlaybackEls = [];
