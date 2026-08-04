@@ -23,5 +23,16 @@
         "script.js"
       ]
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+        "id": "@spotify-pitch-shift",
+        "data_collection_permissions": {
+            "required": [
+                "none"
+            ]
+        },
+        "strict_min_version": "140.0"
+    }
+  }
 }

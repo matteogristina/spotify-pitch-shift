@@ -65,7 +65,7 @@
     const max = maxInput.value;
     const pp = ppCheckbox.checked;
 
-    iconSpan.innerHTML = formatSemitone(val);
+    iconSpan.textContent = formatSemitone(val);
     sliderInput.style.backgroundSize = `${((val - min) * 100) / (max - min)}% 100%`;
 
     if (pp) {
@@ -131,8 +131,8 @@
     maxInput.value = max;
     localStorage.setItem('sps-semitones-min', min);
     localStorage.setItem('sps-semitones-max', max);
-    sliderMin.innerHTML = formatSemitone(min);
-    sliderMax.innerHTML = formatSemitone(max);
+    sliderMin.textContent = formatSemitone(min);
+    sliderMax.textContent = formatSemitone(max);
     setValues();
     toggleShowSettings();
   };
@@ -272,8 +272,8 @@
     minInput.value = lastMin;
     maxInput.value = lastMax;
 
-    sliderMin.innerHTML = formatSemitone(lastMin);
-    sliderMax.innerHTML = formatSemitone(lastMax);
+    sliderMin.textContent = formatSemitone(lastMin);
+    sliderMax.textContent = formatSemitone(lastMax);
 
     // add event listeners
     sliderInput.oninput = setValues;
@@ -301,13 +301,13 @@
         sliderInput.max = 0;
         maxInput.value = 0;
         localStorage.setItem('sps-semitones-max', maxInput.value);
-        sliderMax.innerHTML = formatSemitone(Number(maxInput.value));
+        sliderMax.textContent = formatSemitone(Number(maxInput.value));
       }
       if (sliderInput.min > 0) {
         sliderInput.min = 0;
         minInput.value = 0;
         localStorage.setItem('sps-semitones-min', minInput.value);
-        sliderMin.innerHTML = formatSemitone(Number(minInput.value));
+        sliderMin.textContent = formatSemitone(Number(minInput.value));
       }
       sliderInput.value = 0;
       setValues();
