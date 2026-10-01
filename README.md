@@ -7,6 +7,20 @@
 
 #### Added to firefox store Aug 7, 2026.
 
+## Screenshots
+
+| Hotbar Icon | General UI |
+| --- | --- |
+| ![Basic ui](assets/basic-ui.png) | ![General ui](assets/general-ui.png) |
+
+| Shift Down | Shift Up |
+| --- | --- |
+| ![Shift down](assets/shift-down-ui.png) | ![Shift up](assets/shift-up-ui.png) |
+
+| Settings | Slider Gif                                    |
+| --- |-----------------------------------------------|
+| ![Settings example](assets/settings-ui.png) | ![Slider gif](assets/spotify-pitch-shift.gif) |
+
 ## Feature highlights
 
 Browser extension for Spotify Web Player that adds a playback control beside Spotify’s volume controls.
