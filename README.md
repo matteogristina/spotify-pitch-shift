@@ -5,6 +5,8 @@
 	</picture>
 </div>
 
+#### Added to firefox store Aug 7, 2026.
+
 ## Feature highlights
 
 Browser extension for Spotify Web Player that adds a playback control beside Spotify’s volume controls.
