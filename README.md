@@ -6,6 +6,7 @@
 </div>
 
 #### Added to firefox store Aug 7, 2026.
+#### Added to chrome web store Oct 3, 2026.
 
 ## Screenshots
 
@@ -38,8 +39,12 @@ Browser extension for Spotify Web Player that adds a playback control beside Spo
 
 ## Quick start
 
-#### Extensions/Add-ons coming soon.
+Extension is available via:
 
+[Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/spotify-pitch-shift/)
+
+
+[Chrome Web Store](https://chromewebstore.google.com/detail/spotify-pitch-shift/dpjomkgjmpbkohfednmhjhpadhkmkblg)
 
 ## Contributing
 
